@@ -466,10 +466,10 @@ export function createManagement({ stores, runtime, channels, eac, subscriptions
       const referer = req.headers.referer
       const origin = req.headers.origin
       const malformedSource = [referer, origin].some(value => value !== undefined && (
-        typeof value !== 'string' || !value.startsWith('http://')
+        typeof value !== 'string' || !/^https?:\/\//.test(value)
       ))
       if (closed || !cookieName) json(res, 503, { error: '服务正在停止或启动' })
-      else if (malformedSource || structuralRejection(req) !== undefined) json(res, 403, { error: '管理接口仅允许本机同源访问' })
+      else if (malformedSource || structuralRejection(req) !== undefined) json(res, 403, { error: '管理接口请求来源或 Host 校验失败' })
       else if (asset) {
         if (req.method !== 'GET' && req.method !== 'HEAD') json(res, 405, { error: '资源仅支持 GET 或 HEAD' })
         else {
